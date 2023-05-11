@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ticketingapp-dev-205001-authRole",
+      "UnauthRoleArn": "arn:aws:iam::591736166602:role/amplify-ticketingapp-dev-205001-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::591736166602:role/amplify-ticketingapp-dev-205001-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-ticketingapp-dev-205001-deployment",
+      "UnauthRoleName": "amplify-ticketingapp-dev-205001-unauthRole",
+      "StackName": "amplify-ticketingapp-dev-205001",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:591736166602:stack/amplify-ticketingapp-dev-205001/2e582d00-ef31-11ed-afe3-0affbfa7133a",
+      "AmplifyAppId": "d3tgkim1qvhmo3"
+    },
+    "categories": {
+      "auth": {
+        "ticketingappf0dd0292": {}
+      }
+    }
+  }
+}

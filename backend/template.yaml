@@ -1,0 +1,233 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Globals:
+  Function:
+    Runtime: python3.9
+    Timeout: 30
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref TravelTicketsTable
+        EVENTS_TABLE_NAME: !Ref EventsTable
+
+Resources:
+  TravelTicketsTable:
+    Type: 'AWS::Serverless::SimpleTable'
+    Properties:
+      PrimaryKey:
+        Name: TicketID
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  EventsTable:
+    Type: 'AWS::Serverless::SimpleTable'
+    Properties:
+      PrimaryKey:
+        Name: EventID
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  # Event Functions
+  ListEventsFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: events.handler
+      CodeUri: ./src/handlers
+      Description: List all events
+      MemorySize: 128
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBReadPolicy:
+            TableName: !Ref EventsTable
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /events
+            RestApiId: !Ref MyApi
+            Method: get
+            Auth:
+              Authorizer: CognitoUserPools
+  
+  CreateEventFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: events.handler
+      CodeUri: ./src/handlers
+      Description: Create a new event
+      MemorySize: 128
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref EventsTable
+      Events:
+        PostResource:
+          Type: Api
+          Properties:
+            Path: /events
+            RestApiId: !Ref MyApi
+            Method: post
+            Auth:
+              Authorizer: CognitoUserPools
+    
+  # Ticket Functions
+  ListTicketsFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: tickets.handler
+      CodeUri: ./src/handlers
+      Description: List all ticket reservations
+      MemorySize: 128
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBReadPolicy:
+            TableName: !Ref TravelTicketsTable
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /tickets
+            RestApiId: !Ref MyApi
+            Method: get
+            Auth:
+              Authorizer: CognitoUserPools
+
+  CreateTicketFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: tickets.handler
+      CodeUri: ./src/handlers
+      Description: Create a new ticket reservation
+      MemorySize: 128
+      # Grant access to DynamoDB
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TravelTicketsTable
+      Events:
+        PostResource:
+          Type: Api
+          Properties:
+            Path: /tickets
+            RestApiId: !Ref MyApi
+            Method: post
+            Auth:
+              Authorizer: CognitoUserPools
+
+
+  UpdateTicketFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: tickets.handler
+      CodeUri: ./src/handlers
+      Description: Update an existing ticket reservation
+      MemorySize: 128
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TravelTicketsTable
+      Events:
+        PutResource:
+          Type: Api
+          Properties:
+            Path: /tickets
+            Method: put
+            RestApiId: !Ref MyApi
+            Auth:
+              Authorizer: CognitoUserPools
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: my-user-pool-name
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireNumbers: true
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireSymbols: true
+      Schema:
+        - Name: name
+          Required: true
+          AttributeDataType: String
+        - Name: email
+          Required: true
+          AttributeDataType: String
+          Mutable: false
+      UsernameAttributes:
+        - email
+
+  MyApi:
+    Type: 'AWS::Serverless::Api'
+    Properties:
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: CognitoUserPools
+        Authorizers:
+          CognitoUserPools:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+      DefinitionBody:
+        swagger: '2.0'
+        info:
+          title: My API
+          version: '1.0'
+        paths:
+          /tickets:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri:
+                  Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListTicketsFunction.Arn}/invocations'
+            post:
+              security:
+                - CognitoUserPools: []
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri:
+                  Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateTicketFunction.Arn}/invocations'
+            put:
+              security:
+                - CognitoUserPools: []
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri:
+                  Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateTicketFunction.Arn}/invocations'
+        securityDefinitions:
+          CognitoUserPools:
+            type: apiKey
+            name: Authorization
+            in: header
+            x-amazon-apigateway-authtype: cognito_user_pools
+            x-amazon-apigateway-authorizer:
+              type: cognito_user_pools
+              providerARNs:
+                - !GetAtt CognitoUserPool.Arn
+Outputs:
+  TravelTicketsTableArn:
+    Description: The ARN of the Travel Tickets DynamoDB Table
+    Value: !GetAtt TravelTicketsTable.Arn
+  ListTicketsFunctionArn:
+    Description: The ARN of the List Tickets Lambda Function
+    Value: !GetAtt ListTicketsFunction.Arn
+  CreateTicketFunctionArn:
+    Description: The ARN of the Create Ticket Lambda Function
+    Value: !GetAtt CreateTicketFunction.Arn
+  UpdateTicketFunctionArn:
+    Description: The ARN of the Update Ticket Lambda Function
+    Value: !GetAtt UpdateTicketFunction.Arn
+  CognitoUserPoolArn:
+    Description: The ARN of the Cognito User Pool
+    Value: !GetAtt CognitoUserPool.Arn
+  MyApiUrl:
+    Description: The URL of the My API
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
