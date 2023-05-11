@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Auth } from 'aws-amplify';
 import Cookies from 'js-cookie';
 import {
   Box,
@@ -28,8 +29,48 @@ const Checkout = () => {
     setTotalPrice(priceSum);
   }, [savedEvents]);
 
-  const handlePurchase = () => {
-    // Implement purchase functionality here
+  const handlePurchase = async () => {
+    try {
+      // Get current user's authentication token
+      const session = await Auth.currentSession();
+      const token = session.getIdToken().getJwtToken();
+  
+      // Send purchase request with authentication token in headers
+      // Get api endpoint from configuration file
+      const endpoint = process.env.REACT_APP_TICKETING_API_PRODUCTION_REGIONAL;
+      // log endpoint
+      console.log(endpoint);
+
+      const response = await fetch(endpoint + "tickets", {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(savedEvents)
+      });
+
+    //   const response = await fetch(process.env.TICKETING_API_KEY_REGIONAL+"/tickets/purchase", {
+    //     method: 'POST',
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(savedEvents)
+    //   });
+  
+      if (response.ok) {
+        // Purchase successful, clear saved events
+        Cookies.remove('savedEvents');
+        window.location.reload();
+      } else {
+        // Purchase failed, handle error
+        console.error('Error:', response.statusText);
+      }
+    } catch (error) {
+      // Handle authentication error
+      console.error('Error:', error);
+    }
   };
 
   const handleRemove = (id) => {

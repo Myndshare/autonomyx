@@ -16,5 +16,23 @@
         "ticketingappf0dd0292": {}
       }
     }
+  },
+  "ticketapp": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ticketingapp-ticketapp-151216-authRole",
+      "UnauthRoleArn": "arn:aws:iam::591736166602:role/amplify-ticketingapp-ticketapp-151216-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::591736166602:role/amplify-ticketingapp-ticketapp-151216-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-ticketingapp-ticketapp-151216-deployment",
+      "UnauthRoleName": "amplify-ticketingapp-ticketapp-151216-unauthRole",
+      "StackName": "amplify-ticketingapp-ticketapp-151216",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:591736166602:stack/amplify-ticketingapp-ticketapp-151216/29a45af0-efcb-11ed-ad5d-0ae6b14d0c5a",
+      "AmplifyAppId": "d1uazgaffkepm"
+    },
+    "categories": {
+      "auth": {
+        "ticketingappf0dd0292": {}
+      }
+    }
   }
 }

@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# Event Ticketing Service
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is an example project that showcases how agents can be used to control business flows in a service. The project also provides customizable event streams to the service to simulate changes in business and see how agents can self-regulate. It showcases the power of the myndshare.ai agent/human integration framework to enable autonomous organizations driven by software agents. 
 
-## Available Scripts
+## Getting Started
 
-In the project directory, you can run:
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and uses the [AWS Amplify Framework](https://aws-amplify.github.io/) to manage the backend.
 
-### `npm start`
+### Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+To run this project, you will need the following installed on your machine:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- [Node.js](https://nodejs.org/en/)
+- [npm](https://www.npmjs.com/get-npm)
+- [AWS CLI](https://aws.amazon.com/cli/)
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To install the project dependencies, run the following command:
 
-### `npm run build`
+```
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Configuration
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+To configure the Amplify framework for this project, run the following command:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+amplify configure
+```
 
-### `npm run eject`
+This command will guide you through the process of setting up an AWS account and creating an IAM user for Amplify.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+After configuring Amplify, you can create the backend resources for this project by running the following command:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+amplify init
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+This command will prompt you to select the type of backend you want to create. Choose "GraphQL API" and follow the prompts to create the API.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Usage
 
-## Learn More
+To start the development server, run the following command:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+npm start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This command will start the development server and open the application in your default browser.
 
-### Code Splitting
+### Deploying
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+To deploy the application to a production environment, run the following command:
 
-### Analyzing the Bundle Size
+```
+npm run build
+amplify publish
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+This command will build the application for production and deploy it to the AWS infrastructure you created earlier.
 
-### Making a Progressive Web App
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

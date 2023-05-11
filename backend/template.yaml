@@ -1,233 +1,310 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Transform: 'AWS::Serverless-2016-10-31'
-
+Transform: AWS::Serverless-2016-10-31
 Globals:
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'content-type'"
+      AllowOrigin: "'*'"
   Function:
     Runtime: python3.9
+    MemorySize: 128
     Timeout: 30
-    Environment:
-      Variables:
-        TABLE_NAME: !Ref TravelTicketsTable
-        EVENTS_TABLE_NAME: !Ref EventsTable
 
 Resources:
-  TravelTicketsTable:
-    Type: 'AWS::Serverless::SimpleTable'
+  Events:
+    Type: AWS::DynamoDB::Table
     Properties:
-      PrimaryKey:
-        Name: TicketID
-        Type: String
-      ProvisionedThroughput:
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 2
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+  Tickets:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+  Locations:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
 
-  EventsTable:
-    Type: 'AWS::Serverless::SimpleTable'
+  EventHandler:
+    Type: AWS::Serverless::Function
     Properties:
-      PrimaryKey:
-        Name: EventID
-        Type: String
-      ProvisionedThroughput:
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 2
-
-  # Event Functions
-  ListEventsFunction:
-    Type: 'AWS::Serverless::Function'
-    Properties:
-      Handler: events.handler
-      CodeUri: ./src/handlers
-      Description: List all events
-      MemorySize: 128
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: EventHandler
+      CodeUri: src/Events
+      Handler: app.handler
+      Tracing: Active
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Events
+          TABLE_ARN: !GetAtt Events.Arn
       Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBReadPolicy:
-            TableName: !Ref EventsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Events
       Events:
-        GetResource:
+        APIBackendGETevent:
           Type: Api
           Properties:
-            Path: /events
-            RestApiId: !Ref MyApi
-            Method: get
-            Auth:
-              Authorizer: CognitoUserPools
+            Path: /event
+            Method: GET
+            RestApiId: !Ref APIBackend
+        APIBackendGETeventid:
+          Type: Api
+          Properties:
+            Path: /event/{id}
+            Method: GET
+            RestApiId: !Ref APIBackend
+        APIBackendPOSTevent:
+          Type: Api
+          Properties:
+            Path: /event
+            Method: POST
+            RestApiId: !Ref APIBackend
+  EventHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${EventHandler}
+
+  TicketHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: TicketHandler
+      CodeUri: src/Tickets
+      Handler: app.handler
+      Tracing: Active
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Tickets
+          TABLE_ARN: !GetAtt Tickets.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Tickets
+      Events:
+        APIBackendPUTticket:
+          Type: Api
+          Properties:
+            Path: /ticket/{id}
+            Method: PUT
+            RestApiId: !Ref APIBackend
+        APIBackendPOSTticket:
+          Type: Api
+          Properties:
+            Path: /ticket
+            Method: POST
+            RestApiId: !Ref APIBackend
+        APIBackendGETtickets:
+          Type: Api
+          Properties:
+            Path: /tickets
+            Method: GET
+            RestApiId: !Ref APIBackend
+        APIBackendGETticketid:
+          Type: Api
+          Properties:
+            Path: /ticket/{id}
+            Method: GET
+            RestApiId: !Ref APIBackend
+  TicketHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${TicketHandler}
   
-  CreateEventFunction:
-    Type: 'AWS::Serverless::Function'
+  LocationHandler:
+    Type: AWS::Serverless::Function
     Properties:
-      Handler: events.handler
-      CodeUri: ./src/handlers
-      Description: Create a new event
-      MemorySize: 128
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: LocationHandler
+      CodeUri: src/Locations
+      Handler: app.handler
+      Tracing: Active
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Locations
+          TABLE_ARN: !GetAtt Locations.Arn
       Policies:
-        - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
-            TableName: !Ref EventsTable
+            TableName: !Ref Locations
       Events:
-        PostResource:
+        APIBackendGETlocations:
           Type: Api
           Properties:
-            Path: /events
-            RestApiId: !Ref MyApi
-            Method: post
-            Auth:
-              Authorizer: CognitoUserPools
-    
-  # Ticket Functions
-  ListTicketsFunction:
-    Type: 'AWS::Serverless::Function'
-    Properties:
-      Handler: tickets.handler
-      CodeUri: ./src/handlers
-      Description: List all ticket reservations
-      MemorySize: 128
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBReadPolicy:
-            TableName: !Ref TravelTicketsTable
-      Events:
-        GetResource:
+            Path: /locations
+            Method: GET
+            RestApiId: !Ref APIBackend
+        APIBackendGETlocationid:
           Type: Api
           Properties:
-            Path: /tickets
-            RestApiId: !Ref MyApi
-            Method: get
-            Auth:
-              Authorizer: CognitoUserPools
-
-  CreateTicketFunction:
-    Type: 'AWS::Serverless::Function'
-    Properties:
-      Handler: tickets.handler
-      CodeUri: ./src/handlers
-      Description: Create a new ticket reservation
-      MemorySize: 128
-      # Grant access to DynamoDB
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TravelTicketsTable
-      Events:
-        PostResource:
+            Path: /location/{id}
+            Method: GET
+            RestApiId: !Ref APIBackend
+        APIBackendPOSTlocation:
           Type: Api
           Properties:
-            Path: /tickets
-            RestApiId: !Ref MyApi
-            Method: post
-            Auth:
-              Authorizer: CognitoUserPools
-
-
-  UpdateTicketFunction:
-    Type: 'AWS::Serverless::Function'
+            Path: /location
+            Method: POST
+            RestApiId: !Ref APIBackend
+  LocationHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
     Properties:
-      Handler: tickets.handler
-      CodeUri: ./src/handlers
-      Description: Update an existing ticket reservation
-      MemorySize: 128
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TravelTicketsTable
-      Events:
-        PutResource:
-          Type: Api
-          Properties:
-            Path: /tickets
-            Method: put
-            RestApiId: !Ref MyApi
-            Auth:
-              Authorizer: CognitoUserPools
+      LogGroupName: !Sub /aws/lambda/${LocationHandler}
 
-  CognitoUserPool:
-    Type: AWS::Cognito::UserPool
+  APIBackend:
+    Type: AWS::Serverless::Api
     Properties:
-      UserPoolName: my-user-pool-name
-      AutoVerifiedAttributes:
-        - email
-      Policies:
-        PasswordPolicy:
-          MinimumLength: 8
-          RequireNumbers: true
-          RequireUppercase: true
-          RequireLowercase: true
-          RequireSymbols: true
-      Schema:
-        - Name: name
-          Required: true
-          AttributeDataType: String
-        - Name: email
-          Required: true
-          AttributeDataType: String
-          Mutable: false
-      UsernameAttributes:
-        - email
-
-  MyApi:
-    Type: 'AWS::Serverless::Api'
-    Properties:
+      Name: !Sub
+        - ${ResourceName} From Stack ${AWS::StackName}
+        - ResourceName: APIBackend
       StageName: Prod
-      Auth:
-        DefaultAuthorizer: CognitoUserPools
-        Authorizers:
-          CognitoUserPools:
-            UserPoolArn: !GetAtt CognitoUserPool.Arn
       DefinitionBody:
-        swagger: '2.0'
-        info:
-          title: My API
-          version: '1.0'
+        openapi: "3.0"
+        info: {}
         paths:
+          /event:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EventHandler.Arn}/invocations
+              responses: {}
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EventHandler.Arn}/invocations
+              responses: {}
+          /event/{id}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EventHandler.Arn}/invocations
+              responses: {}
+          /ticket:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TicketHandler.Arn}/invocations
+              responses: {}          
           /tickets:
             get:
               x-amazon-apigateway-integration:
                 httpMethod: POST
                 type: aws_proxy
-                uri:
-                  Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListTicketsFunction.Arn}/invocations'
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TicketHandler.Arn}/invocations
+              responses: {}
+          /ticket/{id}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TicketHandler.Arn}/invocations
+              responses: {}
+          /locations:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LocationHandler.Arn}/invocations
+              responses: {}
+          /location/{id}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LocationHandler.Arn}/invocations
+              responses: {}
+          /location:
             post:
-              security:
-                - CognitoUserPools: []
               x-amazon-apigateway-integration:
                 httpMethod: POST
                 type: aws_proxy
-                uri:
-                  Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateTicketFunction.Arn}/invocations'
-            put:
-              security:
-                - CognitoUserPools: []
-              x-amazon-apigateway-integration:
-                httpMethod: POST
-                type: aws_proxy
-                uri:
-                  Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateTicketFunction.Arn}/invocations'
-        securityDefinitions:
-          CognitoUserPools:
-            type: apiKey
-            name: Authorization
-            in: header
-            x-amazon-apigateway-authtype: cognito_user_pools
-            x-amazon-apigateway-authorizer:
-              type: cognito_user_pools
-              providerARNs:
-                - !GetAtt CognitoUserPool.Arn
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LocationHandler.Arn}/invocations
+              responses: {}
+      EndpointConfiguration: REGIONAL
+      TracingEnabled: true
+  
+  APIBackendCloudFront:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !Sub "${APIBackend}.execute-api.${AWS::Region}.amazonaws.com"
+            Id: APIBackend
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+        DefaultCacheBehavior:
+          TargetOriginId: APIBackend
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponsePagePath: /index.html
+            ResponseCode: 200
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
+        Enabled: true
+        DefaultRootObject: index.html
+        PriceClass: PriceClass_All
+        # WebACLId: !Ref WebACL
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: none
+      Tags:
+        - Key: Name
+          Value: MyCloudFrontDistribution
+
+  
+
 Outputs:
-  TravelTicketsTableArn:
-    Description: The ARN of the Travel Tickets DynamoDB Table
-    Value: !GetAtt TravelTicketsTable.Arn
-  ListTicketsFunctionArn:
-    Description: The ARN of the List Tickets Lambda Function
-    Value: !GetAtt ListTicketsFunction.Arn
-  CreateTicketFunctionArn:
-    Description: The ARN of the Create Ticket Lambda Function
-    Value: !GetAtt CreateTicketFunction.Arn
-  UpdateTicketFunctionArn:
-    Description: The ARN of the Update Ticket Lambda Function
-    Value: !GetAtt UpdateTicketFunction.Arn
-  CognitoUserPoolArn:
-    Description: The ARN of the Cognito User Pool
-    Value: !GetAtt CognitoUserPool.Arn
-  MyApiUrl:
-    Description: The URL of the My API
-    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+  APIBackend:
+    Description: API Gateway endpoint URL for Prod stage for API Backend
+    Value: !Sub https://${APIBackend}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  EventHandler:
+    Description: Lambda function info for EventHandler
+    Value: !GetAtt EventHandler.Arn
+  TicketHandler:
+    Description: Lambda function info for TicketHandler
+    Value: !GetAtt TicketHandler.Arn
+  LocationHandler:
+    Description: Lambda function info for LocationHandler
+    Value: !GetAtt LocationHandler.Arn
+  
