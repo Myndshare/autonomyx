@@ -32,6 +32,9 @@
     "categories": {
       "auth": {
         "ticketingappf0dd0292": {}
+      },
+      "hosting": {
+        "S3AndCloudFront": {}
       }
     }
   }
