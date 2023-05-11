@@ -1,11 +1,11 @@
-# Event Ticketing Service: A Simulation Platform for Developing and Testing Autonomous Agents using the Cognos Agent framework
+# AutonomyX: A Simulation Platform for Developing and Testing Autonomous Businss Agents using the Cognos Agent framework
 This project works to develop a platform for training and testing custom LLM-based agents on a simulated business environment. The platform provides developers with a way to evaluate the performance of their agents against key performance indicators (KPIs) and performance metrics from various business channels, including a ticketing application, a financial reporting backend, a product analytics dashboard, social media channels, and more.
 
 By using this platform, developers can create autonomous agents that can help increase operational efficiency in businesses. The platform allows developers to test and iterate their agents in a safe and controlled environment, reducing the risk of errors and minimizing downtime.
 
 With the ability to train and test agents against realistic business scenarios, developers can gain valuable insights into how their agents will perform in real-world conditions. This can help developers fine-tune their agents for maximum efficiency and better prepare for challenges that may arise.
 
-The project builds on the capacity of the CognosFramework](https://github.com/Myndshare/cognos) to train cooperative Agents for complex business workflows using KPI guidance, operational control logic, advanced tool selection and effective human supervision and self regulation. 
+The project builds on the capacity of the [CognosFramework](https://github.com/Myndshare/cognos) to train cooperative Agents for complex business workflows using KPI guidance, operational control logic, advanced tool selection and effective human supervision and self regulation. 
 
 ### Disclaimer!! 
 Both projects are yet to be implemented, and are done so purely on an experimental basis by the author to dive into and explore the possibilities of autonomous agent applications for real-world business contexts. It is a evening hobbie project outside of work that does not receive continued attention. If you feel passionate about the topic, feel free to reach out and contribute.
