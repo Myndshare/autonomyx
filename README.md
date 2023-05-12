@@ -1,128 +1,160 @@
-# AutonomyX: A Simulation Platform for Developing and Testing Autonomous Businss Agents using the Cognos Agent framework
-This project works to develop a platform for training and testing custom LLM-based agents on a simulated business environment. The platform provides developers with a way to evaluate the performance of their agents against key performance indicators (KPIs) and performance metrics from various business channels, including a ticketing application, a financial reporting backend, a product analytics dashboard, social media channels, and more.
+# backend
 
-By using this platform, developers can create autonomous agents that can help increase operational efficiency in businesses. The platform allows developers to test and iterate their agents in a safe and controlled environment, reducing the risk of errors and minimizing downtime.
+This project contains source code and supporting files for a serverless application that you can deploy with the AWS Serverless Application Model (AWS SAM) command line interface (CLI). It includes the following files and folders:
 
-With the ability to train and test agents against realistic business scenarios, developers can gain valuable insights into how their agents will perform in real-world conditions. This can help developers fine-tune their agents for maximum efficiency and better prepare for challenges that may arise.
+- `src` - Code for the application's Lambda function.
+- `events` - Invocation events that you can use to invoke the function.
+- `__tests__` - Unit tests for the application code. 
+- `template.yaml` - A template that defines the application's AWS resources.
 
-The project builds on the capacity of the [CognosFramework](https://github.com/Myndshare/cognos) to train cooperative Agents for complex business workflows using KPI guidance, operational control logic, advanced tool selection and effective human supervision and self regulation. 
+The application uses several AWS resources, including Lambda functions, an API Gateway API, and Amazon DynamoDB tables. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
-### Disclaimer!! 
-Both projects are yet to be implemented, and are done so purely on an experimental basis by the author to dive into and explore the possibilities of autonomous agent applications for real-world business contexts. It is a evening hobbie project outside of work that does not receive continued attention. If you feel passionate about the topic, feel free to reach out and contribute.
+If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
+The AWS Toolkit is an open-source plugin for popular IDEs that uses the AWS SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds step-through debugging for Lambda function code. 
 
-## Motivation and scope
-This is an example project that showcases how agents can be used to control business flows within an pure online environment. The project also provides customizable event streams to the service to simulate changes in business and see how agents can self-regulate. Furthermore, it demonstrates how a KPI-driven agent control and integration framework can function, enabling autonomous organizations driven by software agents to be guided through ties to commonly shared business metrics.
+To get started, see the following:
 
-## Business simulation
-The business modeled by the event ticketing application is a company that sells tickets to various events, such as concerts, sporting events, and theater productions. The company works with event organizers to promote and sell tickets to customers, providing a platform for customers to search and browse events, purchase tickets, and manage their orders. The company may also offer additional services, such as VIP packages, special promotions, and customer support. Overall, the goal of the business is to provide a seamless and enjoyable experience for both event organizers and customers, while generating revenue through ticket sales and related services.
+* [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+* [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
+* [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
 
-### KPIs
-* Ticket sales revenue: This is a critical KPI for any ticketing business, as it directly impacts the company's bottom line. One challenge in the current market condition is the unpredictability of the pandemic, which can greatly affect ticket sales for events.
+## Deploy the sample application
 
-* Customer satisfaction: The satisfaction of customers who purchase tickets through the platform is important for building brand loyalty and repeat business. However, the challenge is to ensure that the customers are satisfied with the experience even when events are cancelled or postponed due to unforeseen circumstances.
+The AWS SAM CLI is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
 
-* Time to resolution for customer support tickets: Prompt resolution of customer support tickets is important for maintaining a positive relationship with customers. However, the challenge is to provide timely resolution without sacrificing quality and accuracy of support.
+To use the AWS SAM CLI, you need the following tools:
 
-* Conversion rate: The percentage of visitors who actually purchase tickets on the platform is an important KPI that impacts the company's revenue. One challenge in the current market condition is to ensure that the platform is able to attract visitors and convert them into paying customers despite the uncertainty around the pandemic.
+* AWS SAM CLI - [Install the AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html).
+* Node.js - [Install Node.js 18](https://nodejs.org/en/), including the npm package management tool.
+* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community).
 
-* Cost per acquisition: The cost of acquiring each new customer is an important KPI that impacts the profitability of the business. The challenge is to keep the cost per acquisition low while still attracting high-quality customers who are likely to make repeat purchases.
+To build and deploy your application for the first time, run the following in your shell:
 
-* Time to market for new events: The ability to quickly add new events to the platform and make them available for sale is important for staying competitive in the market. However, the challenge is to ensure that the events are properly vetted and meet quality standards before they are made available on the platform.
-
-## Features
-
-### Front end application mock
-Ability to add events to a cart and checkout for purchase
-Ability to save events for future reference
-Ability to remove events from cart or saved events list
-Responsive design for desktop and mobile devices
-Localized versions for multiple languages
-Integration with payment gateway for secure transactions
-User account dashboard to view purchase history and saved events
-Admin dashboard to manage events, users, and transactions
-Real-time inventory updates for events
-Email notifications for purchase confirmation and event updates
-Integration with social media platforms for event sharing and promotion.
-
-## Roadmap
-
-I am working to develop a realistic business environment simulation for the organization's agents to interact with. This will provide a robust platform for the testing and development of agent-based control and integration frameworks, which can be used to drive autonomous organizational patterns. The roadmap will involve implementing several mock backends, such as financial and departmental expense tracking, and a mock social media environment to simulate content engagement across various media channels. Additionally, a controllable mock activity stream for product analytics will be added to provide real-time feedback on the system's performance.
-
-* Implement a mock financial backend for agents to transact against
-  - Create a mock financial backend that agents can use to transact against.
-  - Implement functionality for agents to check their account balance and perform transactions.
-
-* Implement a mock logic for running expenses in the business by department
-  - Create a mock environment that simulates business expenses by department.
-  - Implement functionality for agents to track expenses and adjust budgets.
-
-* Implement a mock social media environment to simulate content engagement across common media channels for short messaging, articles, news, media
-  - Create a mock social media environment that simulates content engagement across common media channels.
-  - Implement functionality for agents to track engagement metrics and adjust content strategy.
-
-* Add a controllable mock activity stream for your product analytics
-  - Create a mock activity stream that simulates user behavior and product usage.
-  - Implement functionality for agents to analyze user behavior and adjust product strategy accordingly.
-
-## Getting Started
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and uses the [AWS Amplify Framework](https://aws-amplify.github.io/) to manage the backend.
-
-### Prerequisites
-
-To run this project, you will need the following installed on your machine:
-
-- [Node.js](https://nodejs.org/en/)
-- [npm](https://www.npmjs.com/get-npm)
-- [AWS CLI](https://aws.amazon.com/cli/)
-
-### Installation
-
-To install the project dependencies, run the following command:
-
-```
-npm install
+```bash
+sam build
+sam deploy --guided
 ```
 
-### Configuration
+The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
 
-To configure the Amplify framework for this project, run the following command:
+* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
+* **AWS Region**: The AWS region you want to deploy your app to.
+* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
+* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
+* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
-```
-amplify configure
-```
+The API Gateway endpoint API will be displayed in the outputs when the deployment is complete.
 
-This command will guide you through the process of setting up an AWS account and creating an IAM user for Amplify.
+## Use the AWS SAM CLI to build and test locally
 
-After configuring Amplify, you can create the backend resources for this project by running the following command:
+Build your application by using the `sam build` command.
 
-```
-amplify init
-```
-
-This command will prompt you to select the type of backend you want to create. Choose "GraphQL API" and follow the prompts to create the API.
-
-### Usage
-
-To start the development server, run the following command:
-
-```
-npm start
+```bash
+my-application$ sam build
 ```
 
-This command will start the development server and open the application in your default browser.
+The AWS SAM CLI installs dependencies that are defined in `package.json`, creates a deployment package, and saves it in the `.aws-sam/build` folder.
 
-### Deploying
+Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
 
-To deploy the application to a production environment, run the following command:
+Run functions locally and invoke them with the `sam local invoke` command.
+
+```bash
+my-application$ sam local invoke putItemFunction --event events/event-post-item.json
+my-application$ sam local invoke getAllItemsFunction --event events/event-get-all-items.json
+```
+
+The AWS SAM CLI can also emulate your application's API. Use the `sam local start-api` command to run the API locally on port 3000.
+
+```bash
+my-application$ sam local start-api
+my-application$ curl http://localhost:3000/
+```
+
+The AWS SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
+
+```yaml
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+```
+
+## Add a resource to your application
+The application template uses AWS SAM to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources, such as functions, triggers, and APIs. For resources that aren't included in the [AWS SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use the standard [AWS CloudFormation resource types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html).
+
+Update `template.yaml` to add a dead-letter queue to your application. In the **Resources** section, add a resource named **MyQueue** with the type **AWS::SQS::Queue**. Then add a property to the **AWS::Serverless::Function** resource named **DeadLetterQueue** that targets the queue's Amazon Resource Name (ARN), and a policy that grants the function permission to access the queue.
 
 ```
-npm run build
-amplify publish
+Resources:
+  MyQueue:
+    Type: AWS::SQS::Queue
+  getAllItemsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-all-items.getAllItemsHandler
+      Runtime: nodejs18.x
+      DeadLetterQueue:
+        Type: SQS 
+        TargetArn: !GetAtt MyQueue.Arn
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt MyQueue.QueueName
 ```
 
-This command will build the application for production and deploy it to the AWS infrastructure you created earlier.
+The dead-letter queue is a location for Lambda to send events that could not be processed. It's only used if you invoke your function asynchronously, but it's useful here to show how you can modify your application's resources and function configuration.
 
-## License
+Deploy the updated application.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```bash
+my-application$ sam deploy
+```
+
+Open the [**Applications**](https://console.aws.amazon.com/lambda/home#/applications) page of the Lambda console, and choose your application. When the deployment completes, view the application resources on the **Overview** tab to see the new resource. Then, choose the function to see the updated configuration that specifies the dead-letter queue.
+
+## Fetch, tail, and filter Lambda function logs
+
+To simplify troubleshooting, the AWS SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs that are generated by your Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
+
+**NOTE:** This command works for all Lambda functions, not just the ones you deploy using AWS SAM.
+
+```bash
+my-application$ sam logs -n putItemFunction --stack-name sam-app --tail
+```
+
+**NOTE:** This uses the logical name of the function within the stack. This is the correct name to use when searching logs inside an AWS Lambda function within a CloudFormation stack, even if the deployed function name varies due to CloudFormation's unique resource name generation.
+
+You can find more information and examples about filtering Lambda function logs in the [AWS SAM CLI documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
+
+## Unit tests
+
+Tests are defined in the `__tests__` folder in this project. Use `npm` to install the [Jest test framework](https://jestjs.io/) and run unit tests.
+
+```bash
+my-application$ npm install
+my-application$ npm run test
+```
+
+## Cleanup
+
+To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
+
+```bash
+aws cloudformation delete-stack --stack-name backend
+```
+
+## Resources
+
+For an introduction to the AWS SAM specification, the AWS SAM CLI, and serverless application concepts, see the [AWS SAM Developer Guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html).
+
+Next, you can use the AWS Serverless Application Repository to deploy ready-to-use apps that go beyond Hello World samples and learn how authors developed their applications. For more information, see the [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/) and the [AWS Serverless Application Repository Developer Guide](https://docs.aws.amazon.com/serverlessrepo/latest/devguide/what-is-serverlessrepo.html).

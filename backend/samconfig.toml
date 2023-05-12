@@ -1,8 +1,0 @@
-version = 0.1
-[default.deploy.parameters]
-stack_name = "travelapp"
-resolve_s3 = true
-s3_prefix = "travelapp"
-region = "ap-southeast-1"
-capabilities = "CAPABILITY_IAM"
-image_repositories = []

@@ -1,7 +1,0 @@
-botocore==1.29.98
-git-remote-codecommit==1.16
-jmespath==1.0.1
-python-dateutil==2.8.2
-six==1.16.0
-typing_extensions @ file:///private/tmp/python-typing-extensions-20230214-42479-3xxna5/typing_extensions-4.5.0/dist/typing_extensions-4.5.0-py3-none-any.whl
-urllib3==1.26.15
