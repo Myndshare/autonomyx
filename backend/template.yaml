@@ -48,6 +48,14 @@ Resources:
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
 
+  SQLLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: src/layer_sql
+      CompatibleRuntimes:
+        - python3.9
+    Metadata:
+      BuildMethod: python3.9
   EventHandler:
     Type: AWS::Serverless::Function
     Properties:
@@ -122,7 +130,7 @@ Resources:
         APIBackendGETtickets:
           Type: Api
           Properties:
-            Path: /tickets
+            Path: /ticket
             Method: GET
             RestApiId: !Ref APIBackend
         APIBackendGETticketid:
@@ -180,6 +188,62 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${LocationHandler}
 
+  RDSTicketHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: RDSTicketHandler
+      CodeUri: src/RDSBacked/tickets
+      Handler: app.handler
+      Tracing: Active
+      Environment:
+        Variables:
+          DB_USER: admin
+          DB_PASSWORD: Password123!
+          DB_HOST: mydbinstance.cluster-cwy9ycgwyhan.us-east-1.rds.amazonaws.com
+          DB_PORT: 3306
+          DB_NAME: ticketing
+      # Policies:
+      #   - AuroraDataAPIPolicy:
+      #       FromAuroraCluster: mydbcluster
+      #       ResourceArn: arn:aws:rds:us-east-1:123456789012:cluster:mydbcluster
+      #       SqlStatements:
+      #         - SELECT * FROM events
+      Layers:
+        - !Ref SQLLayer
+      Events:
+        APIBackendGETrdsticket:
+          Type: Api
+          Properties:
+            Path: /rdsticket
+            Method: GET
+            RestApiId: !Ref APIBackend
+        APIBackendPOSTrdsticket:
+          Type: Api
+          Properties:
+            Path: /rdsticket
+            Method: POST
+            RestApiId: !Ref APIBackend
+        APIBackendGETrdsticketid:
+          Type: Api
+          Properties:
+            Path: /rdsticket/{id}
+            Method: GET
+            RestApiId: !Ref APIBackend
+        APIBackendPUTrdsticket:
+          Type: Api
+          Properties:
+            Path: /rdsticket/{id}
+            Method: POST
+            RestApiId: !Ref APIBackend
+  RDSTicketHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${RDSTicketHandler}
+
   APIBackend:
     Type: AWS::Serverless::Api
     Properties:
@@ -218,7 +282,6 @@ Resources:
                 type: aws_proxy
                 uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${TicketHandler.Arn}/invocations
               responses: {}          
-          /tickets:
             get:
               x-amazon-apigateway-integration:
                 httpMethod: POST
@@ -252,6 +315,32 @@ Resources:
                 httpMethod: POST
                 type: aws_proxy
                 uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LocationHandler.Arn}/invocations
+              responses: {}
+          /rdsticket:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RDSTicketHandler.Arn}/invocations
+              responses: {}
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RDSTicketHandler.Arn}/invocations
+              responses: {}
+          /rdsticket/{id}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RDSTicketHandler.Arn}/invocations
+              responses: {}
+            put:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RDSTicketHandler.Arn}/invocations
               responses: {}
       EndpointConfiguration: REGIONAL
       TracingEnabled: true
